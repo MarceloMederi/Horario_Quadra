@@ -35,22 +35,29 @@ def formulario():
     data_saida = datetime.datetime.now().date()   # Data atual como data de saída    
     
     if horario_entrada == horario_saida:
-        duracao = 24 # Duração é de 24 horas
+        duracao = datetime.timedelta(hours=24) # Duração é de 24 horas
     elif horario_entrada > horario_saida:
         data_saida += datetime.timedelta(days=1) # Incrementa um dia na data de saída
         diferenca = datetime.datetime.combine(data_saida, horario_saida) - datetime.datetime.combine(data_entrada, horario_entrada)
-        duracao = diferenca.total_seconds() / 3600 # transforma a duração em horas
+        duracao = diferenca
     else:
         diferenca = datetime.datetime.combine(data_saida, horario_saida) - datetime.datetime.combine(data_entrada, horario_entrada)
-        duracao = diferenca.total_seconds() / 3600 # transforma a duração em horas
-        
-    total = duracao * total_pago
+        duracao = diferenca
+    
+    if duracao >= datetime.timedelta(hours=24):
+        dias = duracao.days
+        horas = duracao.seconds // 3600
+        minutos = (duracao.seconds % 3600) // 60
+        duracao_formatada = f"{dias}:{horas:02d}:{minutos:02d}"
+    else:
+        duracao_em_horas = duracao.total_seconds() / 3600
+        duracao_formatada = f"{duracao_em_horas:.2f}"
+    
+    total = duracao.total_seconds() / 3600 * total_pago
     
     print(f"Total a pagar: R${total:.2f}")
-    print(f"Você ficou {duracao:.2f} horas na quadra.")
+    print(f"Você ficou {duracao_formatada} horas na quadra.")
     
 while True:
     menu()
     formulario()
-
-
